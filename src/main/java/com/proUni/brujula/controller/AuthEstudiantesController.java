@@ -27,8 +27,7 @@ public class AuthEstudiantesController {
 		    Map<String, Object> response = authService.login(
 		        loginRequest.getCorreo(),
 		        loginRequest.getPassword()
-		    );
-		    return ResponseEntity.ok(response);
+		    );         return ResponseEntity.ok(response);
 		}
 
 }
