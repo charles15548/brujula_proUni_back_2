@@ -27,13 +27,13 @@ import com.proUni.brujula.service.PerfilService;
 public class PerfilEstudianteSI implements PerfilService{
 	
 	
-	private final String SUPABASE_URL = "https://ykayyxqcplawwwyjqbrq.supabase.co";
-    private final String SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlrYXl5eHFjcGxhd3d3eWpxYnJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2MjE2MDYsImV4cCI6MjA3MTE5NzYwNn0.hrKC7HNWdM-AcFBAx1_PAOVE6gzhwrkHXwhLfLqyJ9k";
-    private final String BUCKET = "img/perfil"; 
+	
+	private final String BUCKET = "img/perfil"; 
 	
 	@Autowired
     private PerfilEstudianteRespository dao;
 
+	Utilitarios util = new Utilitarios();
 	@Override
 	public ResponseEntity<Map<String, Object>> listarPerfil() {
 		// TODO Auto-generated method stub
@@ -46,8 +46,7 @@ public class PerfilEstudianteSI implements PerfilService{
 		 Map<String, Object> respuesta = new HashMap<>();
 	        try {
 	            // Subir imagen
-	            String filename = UUID.randomUUID() + "_" + foto.getOriginalFilename();
-	            String imageUrl = subirImagen(foto, filename);
+	            String imageUrl = util.subirImagen(foto, util.filename(foto),BUCKET);
 
 	            // Guardar noticia
 	            PerfilesEstudiantes pe = new PerfilesEstudiantes(nombre,apellido,carrera,biografia,proyectoVida,urlCv,imageUrl);
@@ -90,31 +89,7 @@ public class PerfilEstudianteSI implements PerfilService{
 
 	
 	
-	 private String subirImagen(MultipartFile imagen, String filename) throws Exception {
-	        String uploadUrl = SUPABASE_URL + "/storage/v1/object/" + BUCKET + "/" + filename;
-	        
-	        System.out.println("URL de subida: " + uploadUrl);
-	        
-	        HttpRequest request = HttpRequest.newBuilder()
-	                .uri(URI.create(uploadUrl))
-	                .header("Authorization", "Bearer " + SUPABASE_KEY)
-	                .header("Content-Type", imagen.getContentType())
-	                .header("x-upsert", "true")
-	                .POST(HttpRequest.BodyPublishers.ofByteArray(imagen.getBytes()))
-	                .build();
-
-	        HttpResponse<String> response = HttpClient.newHttpClient()
-	                .send(request, HttpResponse.BodyHandlers.ofString());
-	        
-	        System.out.println("Status Code: " + response.statusCode());
-	        System.out.println("Respuesta: " + response.body());
-	        
-	        if (response.statusCode() != 200 && response.statusCode() != 201) {
-	            throw new RuntimeException("Error al subir imagen. Status: " + response.statusCode() + " - " + response.body());
-	        }
-	        
-	        return SUPABASE_URL + "/storage/v1/object/public/" + BUCKET + "/" + filename;
-	    }
+	
 	
 
 }

@@ -29,10 +29,6 @@ public class DesarrolloPersonalSI implements DesarrolloPersonalService{
 	@Autowired
 	private DesarrolloPersonalRepository dao;
 	
-	private final String SUPABASE_URL = "https://ykayyxqcplawwwyjqbrq.supabase.co";
-    private final String SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlrYXl5eHFjcGxhd3d3eWpxYnJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2MjE2MDYsImV4cCI6MjA3MTE5NzYwNn0.hrKC7HNWdM-AcFBAx1_PAOVE6gzhwrkHXwhLfLqyJ9k";
-    private final String BUCKET = "img/desarrolloPersonal"; 
-
 	
 	
 

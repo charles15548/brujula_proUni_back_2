@@ -9,8 +9,9 @@ import java.util.UUID;
 import org.springframework.web.multipart.MultipartFile;
 
 public class Utilitarios {
-	private final String SUPABASE_URL = "https://ykayyxqcplawwwyjqbrq.supabase.co";
-	private final String SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlrYXl5eHFjcGxhd3d3eWpxYnJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2MjE2MDYsImV4cCI6MjA3MTE5NzYwNn0.hrKC7HNWdM-AcFBAx1_PAOVE6gzhwrkHXwhLfLqyJ9k"; 
+	private final String SUPABASE_URL = "https://ppnewklasszhbsdpylel.supabase.co";
+    private final String SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwbmV3a2xhc3N6aGJzZHB5bGVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc2MjYzMDMsImV4cCI6MjA3MzIwMjMwM30.jwOxspEu5PQnc9g8d1uF4AdY6TnLkE4k1SlUBZysBsg";
+    
 	public String subirImagen(MultipartFile imagen, String filename, String BUCKET) throws Exception {
 	        String uploadUrl = SUPABASE_URL + "/storage/v1/object/" + BUCKET + "/" + filename;
 	        

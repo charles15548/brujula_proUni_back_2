@@ -34,10 +34,9 @@ public class NoticiasSI implements NoticiasService{
 	@Autowired
 	private NoticiaLikeRepository likeRepo;
 	
-	private final String SUPABASE_URL = "https://ykayyxqcplawwwyjqbrq.supabase.co";
-    private final String SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlrYXl5eHFjcGxhd3d3eWpxYnJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2MjE2MDYsImV4cCI6MjA3MTE5NzYwNn0.hrKC7HNWdM-AcFBAx1_PAOVE6gzhwrkHXwhLfLqyJ9k";
-    private final String BUCKET = "img/noticias"; 
+	private final String BUCKET = "img/noticias"; 
 
+    Utilitarios util = new Utilitarios();
 	@Override
 	public ResponseEntity<Map<String, Object>> listarBaseNoticias() {
 		Map<String,Object> respuesta = new HashMap<>();	
@@ -81,8 +80,7 @@ public class NoticiasSI implements NoticiasService{
         Map<String, Object> respuesta = new HashMap<>();
         try {
             // Subir imagen
-            String filename = UUID.randomUUID() + "_" + imagen.getOriginalFilename();
-            String imageUrl = subirImagen(imagen, filename);
+            String imageUrl = util.subirImagen(imagen, util.filename(imagen),BUCKET);
 
             // Guardar noticia
             Noticias noticia = new Noticias(titulo,gancho, contenido,fuente, imageUrl);
@@ -109,9 +107,10 @@ public class NoticiasSI implements NoticiasService{
 			
             if(imagen != null && !imagen.isEmpty()) {
 	            try {
-	            	String filename = UUID.randomUUID() + "_" + imagen.getOriginalFilename();
-	            	String imageUrl = subirImagen(imagen, filename);
+	            	
+	            	String imageUrl = util.actualizarArchivo(imagen, BUCKET, n.getImagenUrl());
 	            	n.setImagenUrl(imageUrl);
+	            	
 				} catch (Exception e) {
 					respuesta.put("mensaje", "Error al subir la imagen: " + e.getMessage());
 	                respuesta.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -152,9 +151,8 @@ public class NoticiasSI implements NoticiasService{
 	        	Noticias noticia = noticiaOpt.get();
 	        	if(noticia.getImagenUrl() != null && !noticia.getImagenUrl().isEmpty()) {
 	        		try {
-	        			String[] parts = noticia.getImagenUrl().split("/");
-	        			String filename = parts[parts.length -1];
-	        			eliminarImagenSupabase(filename);
+	        			
+	        			util.eliminarImagenSupabase(util.splitArchivo(noticia.getImagenUrl()),BUCKET);
 	        		}catch (Exception e) {
 	        			respuesta.put("mensaje", "Error al eliminar la imagen de Supabase: " + e.getMessage());
 	                    respuesta.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -178,53 +176,7 @@ public class NoticiasSI implements NoticiasService{
 	 
 	 
 	 
-	 private String subirImagen(MultipartFile imagen, String filename) throws Exception {
-	        String uploadUrl = SUPABASE_URL + "/storage/v1/object/" + BUCKET + "/" + filename;
-	        
-	        System.out.println("URL de subida: " + uploadUrl);
-	        System.out.println("Tamaño archivo: " + imagen.getSize() + " bytes");
-	        System.out.println("Tipo de archivo: " + imagen.getContentType());
-	        
-	        HttpRequest request = HttpRequest.newBuilder()
-	                .uri(URI.create(uploadUrl))
-	                .header("Authorization", "Bearer " + SUPABASE_KEY)
-	                .header("Content-Type", imagen.getContentType())
-	                .header("x-upsert", "true")
-	                .POST(HttpRequest.BodyPublishers.ofByteArray(imagen.getBytes()))
-	                .build();
-
-	        HttpResponse<String> response = HttpClient.newHttpClient()
-	                .send(request, HttpResponse.BodyHandlers.ofString());
-	        
-	        System.out.println("Status Code: " + response.statusCode());
-	        System.out.println("Respuesta: " + response.body());
-	        
-	        if (response.statusCode() != 200 && response.statusCode() != 201) {
-	            throw new RuntimeException("Error al subir imagen. Status: " + response.statusCode() + " - " + response.body());
-	        }
-	        
-	        return SUPABASE_URL + "/storage/v1/object/public/" + BUCKET + "/" + filename;
-	    }
-
-	 private void eliminarImagenSupabase(String filename) throws Exception {
-		    String deleteUrl = SUPABASE_URL + "/storage/v1/object/" + BUCKET + "/" + filename;
-
-		    HttpRequest request = HttpRequest.newBuilder()
-		            .uri(URI.create(deleteUrl))
-		            .header("Authorization", "Bearer " + SUPABASE_KEY)
-		            .DELETE()
-		            .build();
-
-		    HttpResponse<String> response = HttpClient.newHttpClient()
-		            .send(request, HttpResponse.BodyHandlers.ofString());
-
-		    if (response.statusCode() != 200 && response.statusCode() != 204) {
-		        throw new RuntimeException("Error al eliminar imagen en Supabase. Status: " 
-		                                   + response.statusCode() + " - " + response.body());
-		    }
-		}
-
-
+	
 
 
 

@@ -38,7 +38,6 @@ public class RecursoPersonalSI implements RecursoPersonalService{
 	@Autowired
 	private RecursoPersonalRepository dao;
 
-    private final String SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlrYXl5eHFjcGxhd3d3eWpxYnJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2MjE2MDYsImV4cCI6MjA3MTE5NzYwNn0.hrKC7HNWdM-AcFBAx1_PAOVE6gzhwrkHXwhLfLqyJ9k";
     private final String BUCKET = "img/desarrolloPersonal"; 
 
 	Utilitarios util = new Utilitarios();
@@ -95,13 +94,7 @@ public class RecursoPersonalSI implements RecursoPersonalService{
 			RecursosPersonal r = existe.get();
 			
 			if(img != null && !img.isEmpty()) {
-				if(r.getImg() != null && !r.getImg().isEmpty()) {
-					String[] parts = r.getImg().split("/");
-					String filename_eliminar = parts[parts.length -1];
-					util.eliminarImagenSupabase(filename_eliminar, BUCKET);
-				}
-				String filename = UUID.randomUUID() + "_" + img.getOriginalFilename();
-				String imageUrl = util.subirImagen(img, filename, BUCKET);
+				String imageUrl = util.actualizarArchivo(img, BUCKET, r.getImg());
 				r.setImg(imageUrl);
 			}
 			r.setTitulo(titulo);
@@ -135,9 +128,8 @@ public class RecursoPersonalSI implements RecursoPersonalService{
 			RecursosPersonal p = existe.get();
 			if(p.getImg() != null && !p.getImg().isEmpty()) {
 				try {
-        			String[] parts = p.getImg().split("/");
-        			String filename = parts[parts.length -1];
-        			util.eliminarImagenSupabase(filename, BUCKET);
+        			
+        			util.eliminarImagenSupabase(util.splitArchivo(p.getImg()), BUCKET);
         		}catch (Exception e) {
         			respuesta.put("mensaje", "Error al eliminar la imagen de Supabase: " + e.getMessage());
                     respuesta.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
